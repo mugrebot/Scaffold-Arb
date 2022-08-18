@@ -15,11 +15,8 @@ let bnbPrice = 0;
 
 const date = new Date();
 
-/*
 
-this isnt working just yet - trying to implement pancakeswap abi
-
-const poolAddress = '0x2170Ed0880ac9A755fd29B2688956BD959F933F8';
+const poolAddress = '0xEa26B78255Df2bBC31C1eBf60010D78670185bD0';
 
 const addresses = {
     WBNB: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
@@ -31,14 +28,14 @@ const addresses = {
 const poolImmutablesAbi = [
   "function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)",
 ];
-*/
 
-const bscProvider = new ethers.providers.JsonRpcProvider("https://bsc-dataseed.binance.org/", {
+
+const bscProvider = new ethers.providers.JsonRpcProvider("https://bsc-dataseed1.binance.org/", {
   name: "binance",
   chainId: 56,
 });
 
-/* 
+
 
 const poolContract = new ethers.Contract(poolAddress, poolImmutablesAbi, bscProvider);
 
@@ -61,7 +58,6 @@ getPoolImmutables().then(result => {
   console.log(result);
 });
 
-*/
 
 export async function getBnbPrice(): Promise<number> {
   return await lock.acquire("bnb-price", async () => {
