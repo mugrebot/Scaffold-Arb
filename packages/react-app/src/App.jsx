@@ -31,6 +31,9 @@ import deployedContracts from "./contracts/hardhat_contracts.json";
 import { Transactor, Web3ModalSetup } from "./helpers";
 import { Home, ExampleUI, Hints, Subgraph } from "./views";
 import { useStaticJsonRPC } from "./hooks";
+import { getBnbPrice } from "./components/BSC_price.tsx";
+import { getmaticPrice } from "./components/matic_price";
+import { getftmPrice } from "./components/FTM_price";
 
 const { ethers } = require("ethers");
 /*
@@ -69,6 +72,11 @@ const providers = [
   `https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_KEY}`,
   "https://rpc.scaffoldeth.io:48544",
 ];
+
+//right off the bat we would like to use the 5th provider to show price of bnb via bscscann
+console.log(getBnbPrice());
+console.log(getftmPrice());
+console.log(getmaticPrice());
 
 function App(props) {
   // specify all the chains your app is available on. Eg: ['localhost', 'mainnet', ...otherNetworks ]

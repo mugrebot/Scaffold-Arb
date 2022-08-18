@@ -9,6 +9,12 @@ export const BLOCKNATIVE_DAPPID = "0b58206a-f3c0-4701-a62f-73c7243e8c77";
 
 export const ALCHEMY_KEY = "oKxs-03sij-U_N0iOlrSsZFr29-IqbuF";
 
+export const BSC_API = "4VYJMZAP1EKBX6CF2ZBA3JUP92JRBQZGBU";
+
+export const FTM_API = "JRCB8IM9DJHQUCT3B656B5ABTQYDZ2872Z";
+
+export const MATIC_API = "IFA32DCFKAATYI6T5I45SVMCCTE8SC43YE";
+
 const localRpcUrl = process.env.REACT_APP_CODESPACES
   ? `https://${window.location.hostname.replace("3000", "8545")}`
   : "http://" + (global.window ? window.location.hostname : "localhost") + ":8545";
