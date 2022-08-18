@@ -86,25 +86,29 @@ getPoolImmutables().then(result => {
   console.log(result);
     const token0ammt = ethers.utils.formatEther(result.getReserves[0])
     const token1ammt = ethers.utils.formatEther(result.getReserves[1])
-    const both = Number(token0ammt)/Number(token1ammt)
-    console.log(token0ammt, token1ammt, both)
+
 
     //lets do some big number math!
-    const A = result.getReserves[0];
-    const B = result.getReserves[1];
+    const reserve0 = Number(result.getReserves[0]);
+    const reserve1 = Number(result.getReserves[1]);
 
-    const product1A = A.mul(1000)
+    const ammwithfee = 10**18*9975
 
+    //amount in = 1 ETH
   
-     const product1B = (result.getReserves[1]).mul("9975000000000000000000")
+     const A = Number(reserve1*(ammwithfee))
 
-     const sum1Both = product1A.add(product1B)
+     const B = reserve0*10000
+     
+     
 
-     const div2both = product1B.div(sum1Both)
+     const div2both = A/(B+ammwithfee)
+
+
 
     console.log('yeet')
 
-    console.log(A, B, product1A, product1B, sum1Both, div2both)
+    console.log(reserve0, reserve1, A, B, (div2both/10**18))
 
     
 
