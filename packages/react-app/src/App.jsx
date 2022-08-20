@@ -32,8 +32,8 @@ import { Transactor, Web3ModalSetup } from "./helpers";
 import { Home, ExampleUI, Hints, Subgraph } from "./views";
 import { useStaticJsonRPC } from "./hooks";
 import { getBnbPrice } from "./components/BSC_price.tsx";
-import { getmaticPrice } from "./components/matic_price";
-import { getftmPrice } from "./components/FTM_price";
+import { getmaticPrice } from "./components/matic_price.tsx";
+import { getftmPrice } from "./components/FTM_price.tsx";
 
 const { ethers } = require("ethers");
 /*
