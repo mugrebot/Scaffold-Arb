@@ -27,7 +27,7 @@ const { isAddress, getAddress, formatUnits, parseUnits } = utils;
 //
 // Select the network you want to deploy to here:
 //
-const defaultNetwork = "localhost";
+const defaultNetwork = "testnetFantom";
 
 const mainnetGwei = 21;
 
@@ -125,7 +125,8 @@ module.exports = {
     },
     testnetFantom: {
       url: "https://rpc.testnet.fantom.network",
-      gasPrice: 1000000000,
+      chainId: 4002,
+      gasPrice: 4000000000,
       accounts: {
         mnemonic: mnemonic(),
       },
@@ -272,6 +273,13 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
+    bscTestnet: {
+      url: "https://data-seed-prebsc-1-s1.binance.org:8545",
+      chainId: 97,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
     rinkebyArbitrum: {
       url: 'https://rinkeby.arbitrum.io/rpc',
       chainId: 421611,
@@ -290,7 +298,7 @@ module.exports = {
   solidity: {
     compilers: [
       {
-        version: "0.8.4",
+        version: "0.8.0",
         settings: {
           optimizer: {
             enabled: true,
@@ -310,7 +318,7 @@ module.exports = {
     ],
   },
   ovm: {
-    solcVersion: "0.7.6",
+    solcVersion: "0.8.0",
   },
   namedAccounts: {
     deployer: {

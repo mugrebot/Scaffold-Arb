@@ -23,6 +23,7 @@ import {
   NetworkDisplay,
   FaucetHint,
   NetworkSwitch,
+  Events,
 } from "./components";
 import { NETWORKS, ALCHEMY_KEY } from "./constants";
 import externalContracts from "./contracts/external_contracts";
@@ -34,8 +35,21 @@ import { useStaticJsonRPC } from "./hooks";
 import { getBnbPrice } from "./components/BSC_price.tsx";
 import { getmaticPrice } from "./components/matic_price.tsx";
 import { getftmPrice } from "./components/FTM_price.tsx";
+import { useEventListener } from "eth-hooks/events/useEventListener";
+import { AbiCoder } from "ethers/lib/utils";
+import { disconnect } from "process";
+
 
 const { ethers } = require("ethers");
+
+require("dotenv").config();
+
+const adminPrivKey = process.env.adminPrivKey;
+
+const BridgeFtm = require("./contracts/ABI/BridgeFtm.json");
+const BridgeBsc = require("./contracts/ABI/BridgeBsc.json");
+
+
 /*
     Welcome to 🏗 scaffold-eth !
 
@@ -56,7 +70,7 @@ const { ethers } = require("ethers");
 */
 
 /// 📡 What chain are your contracts deployed to?
-const initialNetwork = NETWORKS.localhost; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
+const initialNetwork = NETWORKS.testnetFantom; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
 // 😬 Sorry for all the console logging
 const DEBUG = true;
@@ -72,6 +86,26 @@ const providers = [
   `https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_KEY}`,
   "https://rpc.scaffoldeth.io:48544",
 ];
+
+const ftmProvider = new ethers.providers.JsonRpcProvider(
+  "https://rpc.testnet.fantom.network/",
+  {
+    name: "testnetFantom",
+    chainId: 4002,
+  }
+);
+
+
+const bscProvider = new ethers.providers.StaticJsonRpcProvider(
+  "https://data-seed-prebsc-1-s1.binance.org:8545",
+  {
+    name: "bscTestnet",
+    chainId: 97,
+  }
+);
+
+console.log(bscProvider);
+
 
 //right off the bat we would like to use the 5th provider to show price of bnb via bscscann
 console.log(getBnbPrice());
@@ -121,8 +155,9 @@ function App(props) {
   const gasPrice = useGasPrice(targetNetwork, "fast");
   // Use your injected provider from 🦊 Metamask or if you don't have it then instantly generate a 🔥 burner wallet.
   const userProviderAndSigner = useUserProviderAndSigner(injectedProvider, localProvider, USE_BURNER_WALLET);
+  const userProviderAndSigner2 = useUserProviderAndSigner(injectedProvider, bscProvider, USE_BURNER_WALLET);
   const userSigner = userProviderAndSigner.signer;
-
+  const userSigner2 = userProviderAndSigner2.signer;
   useEffect(() => {
     async function getAddress() {
       if (userSigner) {
@@ -135,6 +170,7 @@ function App(props) {
 
   // You can warn the user if you would like them to be on a specific network
   const localChainId = localProvider && localProvider._network && localProvider._network.chainId;
+  const nonlocalChainId = bscProvider && bscProvider._nework && bscProvider._network.chainId;
   const selectedChainId =
     userSigner && userSigner.provider && userSigner.provider._network && userSigner.provider._network.chainId;
 
@@ -155,9 +191,19 @@ function App(props) {
 
   // Load in your local 📝 contract and read a value from it:
   const readContracts = useContractLoader(localProvider, contractConfig);
+  const readContracts2 = useContractLoader(bscProvider, contractConfig);
+
+  console.log('yeetusmaximum');
+console.log('beep', readContracts, readContracts2);
+
+console.log(readContracts2);
+
+
+  // const bridgeFtm = new ethers.Contract("BridgeFtm", BridgeFtm.abi, ftmProvider);
 
   // If you want to make 🔐 write transactions to your contracts, use the userSigner:
   const writeContracts = useContractLoader(userSigner, contractConfig, localChainId);
+  const writeContracts2 = useContractLoader(userSigner2, contractConfig, nonlocalChainId);
 
   // EXTERNAL CONTRACT EXAMPLE:
   //
@@ -204,10 +250,10 @@ function App(props) {
       console.log("🕵🏻‍♂️ selectedChainId:", selectedChainId);
       console.log("💵 yourLocalBalance", yourLocalBalance ? ethers.utils.formatEther(yourLocalBalance) : "...");
       console.log("💵 yourMainnetBalance", yourMainnetBalance ? ethers.utils.formatEther(yourMainnetBalance) : "...");
-      console.log("📝 readContracts", readContracts);
+      console.log("📝 readContracts", readContracts, readContracts2);
       console.log("🌍 DAI contract on mainnet:", mainnetContracts);
       console.log("💵 yourMainnetDAIBalance", myMainnetDAIBalance);
-      console.log("🔐 writeContracts", writeContracts);
+      console.log("🔐 writeContracts", writeContracts, writeContracts2);
     }
   }, [
     mainnetProvider,
@@ -220,6 +266,8 @@ function App(props) {
     mainnetContracts,
     localChainId,
     myMainnetDAIBalance,
+    readContracts2,
+    writeContracts2,
   ]);
 
   const loadWeb3Modal = useCallback(async () => {
@@ -250,7 +298,112 @@ function App(props) {
     }
   }, [loadWeb3Modal]);
 
+
+
+
+   const bridgeFtmEthers = new ethers.Contract('0x831ceaDac9D92E29Cc6628C75341369Df8C9f414', BridgeFtm, ftmProvider);
+
+
+  console.log(bridgeFtmEthers);
+  // console.log(bridgeFtm);
+  console.log(BridgeFtm);
+
+const { address: admin } = new ethers.Wallet(adminPrivKey, bscProvider);
+
+  const bridgeBsc = new ethers.Contract('0x6010Aa5D55b192e8164E7A6C980ed27D8Fa62076', BridgeBsc, new ethers.Wallet(adminPrivKey, bscProvider));
+
+
+
   const faucetAvailable = localProvider && localProvider.connection && targetNetwork.name.indexOf("local") !== -1;
+
+
+
+
+
+    bridgeFtmEthers.on("Transfer", async(from, to, amount, date, nonce, step, event) => {
+      console.log('transfer occuring waiting for mint');
+    
+    //  console.log(bridgeBsc.estimateGas.mint(to, amount, nonce))
+
+
+  //  const tx = bridgeBsc.mint(to, amount, nonce);
+
+
+const BSCABI = new ethers.utils.Interface(BridgeBsc);
+
+// console.log(BSCABI.encodeFunctionData("mint", [to, amount, nonce]));
+/*
+
+    const [gasPrice, gasCost] = await Promise.all([
+      bscProvider.getGasPrice(),
+      bridgeBsc.estimateGas.mint(to, amount, nonce),
+    ]);
+   const data = BSCABI.encodeFunctionData("mint", [to, amount, nonce]);
+    const txData = {
+      from: admin,
+      to: '0x6010Aa5D55b192e8164E7A6C980ed27D8Fa62076',
+      data,
+      gas: gasCost,
+      gasPrice,
+    };
+    */
+   console.log(writeContracts2);
+
+    console.log(nonce);
+    // console.log(await bridgeBsc?.mint(to, amount, nonce));
+
+    try {
+     //const receipt = await writeContracts2?.BridgeBsc?.mint(to, amount, nonce);
+
+     const [gasPrice, gasCost] = await Promise.all([
+      bscProvider.getGasPrice(),
+      bridgeBsc.estimateGas.mint(to, amount, nonce),
+    ]);
+
+    const data = BSCABI.encodeFunctionData("mint", [to, amount, nonce]);
+
+    const txData = {
+      from: admin,
+      to: '0x6010Aa5D55b192e8164E7A6C980ed27D8Fa62076',
+      data,
+      gas: gasCost,
+      gasPrice,
+    };
+
+    console.log(txData);
+
+
+
+     const receipt = await bridgeBsc?.mint(to, amount, nonce)
+     console.log(`Transaction hash: ${receipt.transactionHash}`);
+     
+     console.log(`
+     Processed transfer:
+     - from ${from} 
+     - to ${to} 
+     - amount ${amount} tokens
+     - date ${date}
+     - event ${event.args[2]}
+   `);
+   bridgeFtmEthers.removeAllListeners();
+  console.log('should be done');
+
+    } catch(err) {
+ 
+      console.log(err);
+      bridgeFtmEthers.removeAllListeners();
+      console.log('should be done');
+    }
+    
+    bridgeFtmEthers.removeAllListeners();
+
+
+    })
+    
+    
+    
+    
+
 
   return (
     <div className="App">
@@ -318,7 +471,14 @@ function App(props) {
       <Switch>
         <Route exact path="/">
           {/* pass in any web3 props to this Home component. For example, yourLocalBalance */}
-          <Home yourLocalBalance={yourLocalBalance} readContracts={readContracts} />
+          <Events
+    contracts={readContracts}
+    contractName="BridgeFtm"
+    eventName="Transfer"
+    localProvider={localProvider}
+    mainnetProvider={ftmProvider}
+    startBlock={1}
+  />
         </Route>
         <Route exact path="/debug">
           {/*
