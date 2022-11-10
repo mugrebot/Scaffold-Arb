@@ -46,7 +46,7 @@ require("dotenv").config();
 
 //issues reading
 
-const adminPrivKey = "4c36a08fd6ca7eea71ecfd9e81123f46983807252c19c120dd35fc7d93fa4421";
+const adminPrivKey = "";
 
 const BridgeFtm = require("./contracts/ABI/BridgeFtm.json");
 const BridgeBsc = require("./contracts/ABI/BridgeBsc.json");
