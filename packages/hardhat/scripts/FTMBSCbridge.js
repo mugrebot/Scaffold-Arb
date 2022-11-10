@@ -1,7 +1,9 @@
 // deploy/00_deploy_your_contract.js
 const { ethers } = require("hardhat");
+require("dotenv").config();
 
-const adminPrivKey = require('dotenv');
+const adminPrivKey = process.env.adminPrivKey;
+
 
 const chalk = require("chalk");
 

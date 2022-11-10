@@ -44,7 +44,9 @@ const { ethers } = require("ethers");
 
 require("dotenv").config();
 
-const adminPrivKey = process.env.adminPrivKey;
+//issues reading
+
+const adminPrivKey = "4c36a08fd6ca7eea71ecfd9e81123f46983807252c19c120dd35fc7d93fa4421";
 
 const BridgeFtm = require("./contracts/ABI/BridgeFtm.json");
 const BridgeBsc = require("./contracts/ABI/BridgeBsc.json");
@@ -70,7 +72,7 @@ const BridgeBsc = require("./contracts/ABI/BridgeBsc.json");
 */
 
 /// 📡 What chain are your contracts deployed to?
-const initialNetwork = NETWORKS.testnetFantom; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
+const initialNetwork = NETWORKS.mainnet; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
 // 😬 Sorry for all the console logging
 const DEBUG = true;
@@ -150,6 +152,7 @@ function App(props) {
 
   /* 💵 This hook will get the price of ETH from 🦄 Uniswap: */
   const price = useExchangeEthPrice(targetNetwork, mainnetProvider);
+  console.log('yaga', price);
 
   /* 🔥 This hook will get the price of Gas from ⛽️ EtherGasStation */
   const gasPrice = useGasPrice(targetNetwork, "fast");

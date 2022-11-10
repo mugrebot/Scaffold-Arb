@@ -1,5 +1,6 @@
 const { ethers } = require("hardhat");
-const { adminPrivKey } = require("dotenv");
+require("dotenv").config();
+const adminPrivKey = process.env.adminPrivKey;
 
 const BridgeFtm = require("../deployments/testnetFantom/BridgeFtm.json");
 
